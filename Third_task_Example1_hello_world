@@ -1,3 +1,47 @@
+# In this task I imported Django and created some files (settings.py, manage.py, main.py, urls.py, views.py) with following codes:
+
+# temp_project\urls.py
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('hello/', views.hello_world, name='hello_world'),
+]
+
+# temp_project/settings.py
+DEBUG = True
+
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+
+REM temp_project\views.py
+from django.http import HttpResponse
+
+def hello_world(request):
+    return HttpResponse("<html><head><title>Hello World</title></head><body><h1>Hello, Django World!</h1></body></html>")
+
+
+# temp_project/views.py
+from django.urls import path
+from django.http import HttpResponse
+
+def hello_world(request):
+    return HttpResponse("<html><head><title>Hello World</title></head><body><h1>Hello, Django World!</h1></body></html>")
+
+urlpatterns = [
+    path('hello/', hello_world, name='hello_world'),
+]
+
+# temp_project/manage.py
+from django.core.management import execute_from_command_line
+from django.urls import include
+
+if __name__ == '__main__':
+    execute_from_command_line()
+
+
 # temp_project/main.py
 import os
 from django.conf import settings
