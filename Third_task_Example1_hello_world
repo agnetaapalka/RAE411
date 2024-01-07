@@ -1,4 +1,4 @@
-# In this task I imported Django and created some files (settings.py, manage.py, main.py, urls.py, views.py) with following codes:
+# In this task I imported Django and created some files (settings.py, manage.py, main.py, urls.py, views.py) with following codes and result you can see in photo hello_world_1example.PNG:
 
 # temp_project\urls.py
 from django.urls import path
