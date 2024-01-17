@@ -1,0 +1,69 @@
+# I created a noe dhango project
+django-admin startproject cloud_message_board
+cd cloud_message_board
+
+# Created a new app for the message board
+python manage.py startapp message_board
+
+# Defined models for the message board
+# message_board/models.py
+from django.db import models
+
+class Message(models.Model):
+    sender_name = models.CharField(max_length=50)
+    recipient_name = models.CharField(max_length=50)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.sender_name} to {self.recipient_name} ({self.created_at})"
+
+# Run migrations
+python manage.py makemigrations
+python manage.py migrate
+
+# Created views for messages
+# message_board/views.py
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import Message
+
+def submit_message(request):
+    if request.method == 'POST':
+        sender_name = request.POST.get('sender_name')
+        recipient_name = request.POST.get('recipient_name')
+        content = request.POST.get('content')
+
+        message = Message.objects.create(
+            sender_name=sender_name,
+            recipient_name=recipient_name,
+            content=content
+        )
+        return JsonResponse({'status': 'success', 'message_id': message.id})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+def get_messages(request):
+    if request.method == 'GET':
+        recipient_name = request.GET.get('recipient_name')
+        messages = Message.objects.filter(recipient_name=recipient_name).order_by('-created_at')[:20]
+
+        message_list = [{'sender_name': msg.sender_name, 'content': msg.content, 'created_at': msg.created_at}
+                        for msg in messages]
+
+        return JsonResponse({'status': 'success', 'messages': message_list})
+    else:
+        return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
+
+# Configrued URLs for the message board
+# message_board/urls.py
+from django.urls import path
+from .views import submit_message, get_messages
+
+urlpatterns = [
+    path('submit_message/', submit_message, name='submit_message'),
+    path('get_messages/', get_messages, name='get_messages'),
+]
+
+
+
