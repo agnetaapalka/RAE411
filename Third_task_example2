@@ -1,0 +1,77 @@
+# Create a new file temp_project/models.py and define a simple model:
+# temp_project/models.py
+from django.db import models
+
+class Greeting(models.Model):
+    message = models.TextField()
+
+Modify the temp_project/main.py script to include the model and update the view to fetch data from the model:
+# temp_project/main.py
+import os
+from django.conf import settings
+from django.http import HttpResponse
+from django.urls import path
+from django.template import loader
+from django.db import models
+from django.core.wsgi import get_wsgi_application
+from django.core.management import execute_from_command_line
+
+# Set the DJANGO_SETTINGS_MODULE environment variable
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "temp_project.settings")
+
+# Check if settings are already configured
+if not settings.configured:
+    # Set up Django settings
+    settings.configure(
+        DEBUG=True,
+        ALLOWED_HOSTS=['*'],
+        ROOT_URLCONF=__name__,
+        INSTALLED_APPS=['temp_project'],
+        DATABASES={
+            'default': {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': 'db.sqlite3',
+            }
+        }
+    )
+
+# Set ALLOWED_HOSTS even when DEBUG is False
+if not settings.ALLOWED_HOSTS:
+    settings.ALLOWED_HOSTS = ['*'] if settings.DEBUG else ['localhost', '127.0.0.1']
+
+# Define the model
+class Greeting(models.Model):
+    message = models.TextField()
+
+# Django view function
+def hello_world(request):
+    greeting = Greeting.objects.create(message="Hello, Django World!")
+    template = loader.get_template('hello_world.html')
+    context = {'greeting': greeting}
+    return HttpResponse(template.render(context, request))
+
+# Django URL patterns
+urlpatterns = [
+    path('hello/', hello_world, name='hello_world'),
+]
+
+# Django application
+application = get_wsgi_application()
+
+# Run Django development server using the manage.py script
+if __name__ == "__main__":
+    execute_from_command_line([__file__, 'runserver'])
+
+# Create a new directory temp_project/templates and inside it, create a file temp_project/templates/hello_world.html
+<!-- temp_project/templates/hello_world.html -->
+<html>
+<head>
+    <title>Hello World</title>
+</head>
+<body>
+    <h1>{{ greeting.message }}</h1>
+</body>
+</html>
+
+
+
